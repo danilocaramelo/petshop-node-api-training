@@ -40,7 +40,9 @@ class Atendimento {
         if (error) {
           res.status(400).json(error);
         } else {
-          res.status(201).json(result);
+          res
+            .status(201)
+            .json({ status: 200, message: "created successfully" });
         }
       });
     }
@@ -67,6 +69,35 @@ class Atendimento {
         res.status(400).json(error);
       } else {
         res.status(200).json(atendimento);
+      }
+    });
+  }
+
+  altera(id, valores, res) {
+    if (valores.data) {
+      valores.data = moment(valores.data, "DD/MM/YYYY").format(
+        "YYYY-MM-DD hh:mm:ss"
+      );
+    }
+    const sql = "UPDATE atendimentos SET ? WHERE id=?";
+
+    connection.query(sql, [valores, id], (error, result) => {
+      if (error) {
+        res.status(400).json(error);
+      } else {
+        res.status(201).json({ ...valores, id });
+      }
+    });
+  }
+
+  delete(id, res) {
+    const sql = "DELETE FROM atendimentos WHERE id=?";
+
+    connection.query(sql, id, (error, result) => {
+      if (error) {
+        res.status(400).json(error);
+      } else {
+        res.status(200).json({ status: 200, message: "deleted successfully" });
       }
     });
   }
