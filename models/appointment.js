@@ -1,26 +1,26 @@
 const moment = require("moment");
-const connection = require("../infraestrutura/connection");
+const connection = require("../infrastructure/connection");
 
-class Atendimento {
-  adiciona(atendimento, res) {
-    const dataCriacao = moment().format("YYYY-MM-DD hh:mm:ss");
-    const data = moment(atendimento.data, "DD/MM/YYYY").format(
+class Appointment {
+  add(appointment, res) {
+    const creationDate = moment().format("YYYY-MM-DD hh:mm:ss");
+    const data = moment(appointment.data, "DD/MM/YYYY").format(
       "YYYY-MM-DD hh:mm:ss"
     );
 
-    const isValidDate = moment(data).isSameOrAfter(dataCriacao);
-    const isValidClient = atendimento.cliente.length >= 5;
+    const isValidDate = moment(data).isSameOrAfter(creationDate);
+    const isValidClient = appointment.cliente.length >= 5;
 
     const validations = [
       {
         name: "data",
         valid: isValidDate,
-        message: "Data deve ser maior ou igual a data atual",
+        message: "Date must to be later than today's date",
       },
       {
         name: "client",
         valid: isValidClient,
-        message: "Nome do cliente deve ter ao menos 5 caracteres",
+        message: "Client name must have 5 characters at least",
       },
     ];
 
@@ -30,8 +30,8 @@ class Atendimento {
       res.status(400).json(errors);
     } else {
       const atendimentoDatado = {
-        ...atendimento,
-        dataCriacao,
+        ...appointment,
+        dataCriacao: creationDate,
         data,
       };
       const sql = "INSERT INTO atendimentos SET ?";
@@ -48,7 +48,7 @@ class Atendimento {
     }
   }
 
-  lista(res) {
+  list(res) {
     const sql = "SELECT * FROM atendimentos";
 
     connection.query(sql, (error, result) => {
@@ -60,32 +60,32 @@ class Atendimento {
     });
   }
 
-  buscaPorId(id, res) {
+  searchById(id, res) {
     const sql = `SELECT * FROM atendimentos WHERE id=${id}`;
 
     connection.query(sql, (error, result) => {
-      const atendimento = result[0];
+      const appointment = result[0];
       if (error) {
         res.status(400).json(error);
       } else {
-        res.status(200).json(atendimento);
+        res.status(200).json(appointment);
       }
     });
   }
 
-  altera(id, valores, res) {
-    if (valores.data) {
-      valores.data = moment(valores.data, "DD/MM/YYYY").format(
+  update(id, values, res) {
+    if (values.data) {
+      values.data = moment(values.data, "DD/MM/YYYY").format(
         "YYYY-MM-DD hh:mm:ss"
       );
     }
     const sql = "UPDATE atendimentos SET ? WHERE id=?";
 
-    connection.query(sql, [valores, id], (error, result) => {
+    connection.query(sql, [values, id], (error, result) => {
       if (error) {
         res.status(400).json(error);
       } else {
-        res.status(201).json({ ...valores, id });
+        res.status(201).json({ ...values, id });
       }
     });
   }
@@ -103,4 +103,4 @@ class Atendimento {
   }
 }
 
-module.exports = new Atendimento();
+module.exports = new Appointment();

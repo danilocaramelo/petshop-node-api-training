@@ -1,29 +1,29 @@
-const Atendimento = require("../models/atendimentos");
+const Appointment = require("../models/appointment");
 
 module.exports = (app) => {
-  app.get("/atendimentos", (req, res) => Atendimento.lista(res));
+  app.get("/atendimentos", (req, res) => Appointment.list(res));
 
   app.get("/atendimentos/:id", (req, res) => {
     const id = parseInt(req.params.id);
 
-    Atendimento.buscaPorId(id, res);
+    Appointment.searchById(id, res);
   });
 
   app.post("/atendimentos", (req, res) => {
     const atendimento = req.body;
-    Atendimento.adiciona(atendimento, res);
+    Appointment.add(atendimento, res);
   });
 
   app.patch("/atendimentos/:id", (req, res) => {
     const id = parseInt(req.params.id);
     const valores = req.body;
 
-    Atendimento.altera(id, valores, res);
+    Appointment.update(id, valores, res);
   });
 
   app.delete("/atendimentos/:id", (req, res) => {
     const id = parseInt(req.params.id);
 
-    Atendimento.delete(id, res);
+    Appointment.delete(id, res);
   });
 };
